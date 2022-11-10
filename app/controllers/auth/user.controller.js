@@ -22,5 +22,26 @@ exports.create = async (req, res) => {
 };
 
 exports.signin = async (req, res) => {
-  res.status(200).json(req.body);
+  const loginEmail = req.body.email;
+  const loginPass = req.body.password;
+  try {
+    const user = await db.users.findOne({ where: { email: loginEmail } });
+    if (!user)
+      res.status(422).json({ status: false, message: "Not a valid user" });
+
+    if (!(await user.validPassword(loginPass, user.password)))
+      res.status(401).send({ error: "Invalid credentials" });
+
+    const userInfo = {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+    };
+
+    res.status(200).json(userInfo);
+  } catch (error) {
+    console.log(error);
+    const errors = await handleDbErrorResponse(error);
+    res.status(422).json({ status: false, errors });
+  }
 };
