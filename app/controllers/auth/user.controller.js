@@ -1,5 +1,6 @@
 const db = require("../../models");
 const handleDbErrorResponse = require("../../utils/error-handler.utils");
+const genAccessToken = require("../../utils/token.utils");
 
 exports.create = async (req, res) => {
   const { name, email, password, phone } = req.body;
@@ -32,10 +33,12 @@ exports.signin = async (req, res) => {
     if (!(await user.validPassword(loginPass, user.password)))
       res.status(401).send({ error: "Invalid credentials" });
 
+    const accessToken = genAccessToken(user.email);
     const userInfo = {
       name: user.name,
       email: user.email,
       phone: user.phone,
+      accessToken: accessToken,
     };
 
     res.status(200).json(userInfo);
