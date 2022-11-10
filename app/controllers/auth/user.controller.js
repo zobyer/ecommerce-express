@@ -1,5 +1,5 @@
-const Sequelize = require("sequelize");
 const db = require("../../models");
+const handleDbErrorResponse = require("../../utils/error-handler.utils");
 
 exports.create = async (req, res) => {
   const { name, email, password, phone } = req.body;
@@ -14,9 +14,13 @@ exports.create = async (req, res) => {
       createdAt: new Date(),
     });
 
-    res.status(403).json({ message: "User Created Successfully" });
+    res.status(200).json({ message: "User Created Successfully" });
   } catch (error) {
-    console.log(error.errors[0].message);
-    res.status(404).json({ status: false, message: error.errors[0].message });
+    const errors = await handleDbErrorResponse(error);
+    res.status(422).json({ status: false, errors });
   }
+};
+
+exports.signin = async (req, res) => {
+  res.status(200).json(req.body);
 };
