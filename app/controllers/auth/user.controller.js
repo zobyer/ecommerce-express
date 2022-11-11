@@ -1,6 +1,8 @@
 const db = require("../../models");
 const handleDbErrorResponse = require("../../utils/error-handler.utils");
 const genAccessToken = require("../../utils/token.utils");
+const jwt = require("jsonwebtoken");
+require("dotenv/config");
 
 exports.create = async (req, res) => {
   const { name, email, password, phone } = req.body;
@@ -33,7 +35,7 @@ exports.signin = async (req, res) => {
     if (!(await user.validPassword(loginPass, user.password)))
       res.status(401).send({ error: "Invalid credentials" });
 
-    const accessToken = genAccessToken(user.email);
+    const accessToken = genAccessToken(user.email, "5s");
     const userInfo = {
       name: user.name,
       email: user.email,
@@ -50,5 +52,13 @@ exports.signin = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
+  try {
+    // jwt.sign({ email: req.body.user.email }, process.env.ACCESS_TOKEN_SECRET, {
+    //   expiresIn: "1s",
+    // });
+  } catch (error) {
+    console.log(error);
+  }
+
   res.status(200).json({ status: true, message: "Logout successfull" });
 };
