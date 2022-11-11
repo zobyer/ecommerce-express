@@ -48,3 +48,7 @@ exports.signin = async (req, res) => {
     res.status(422).json({ status: false, errors });
   }
 };
+
+exports.logout = async (req, res) => {
+  res.status(200).json({ status: true, message: "Logout successfull" });
+};
